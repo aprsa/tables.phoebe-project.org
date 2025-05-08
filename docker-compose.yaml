@@ -1,0 +1,28 @@
+services:
+    tables:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: phoebe-tables:latest
+        container_name: phoebe-tables-server
+        ports:
+            - "5600:5600"
+        volumes:
+            - ./data:/tables/data:ro
+        environment:
+            FLASK_ENV: production
+            LOG_LEVEL: info
+            GUNICORN_CMD_ARGS: >-
+                --workers 5
+                --threads 2
+                --worker-class gthread
+                --timeout 60
+                --graceful-timeout 60
+                --keep-alive 30
+                --preload
+                --max-requests 1000
+                --max-requests-jitter 100
+                --log-level info
+                --access-logfile -
+                --error-logfile -
+        restart: unless-stopped
